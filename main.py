@@ -18,4 +18,5 @@ def root():
 @app.post('/create_post')
 def create_post(new_post : Post):
     print(new_post.rating)
-    return{"data":"new post"}
+    print(new_post.dict())
+    return new_post
