@@ -34,8 +34,8 @@ def get_posts():
     return {"data":my_posts}
 
 @app.post('/posts',status_code=status.HTTP_201_CREATED)
-def create_posts(new_post : Post):
-    post_dict = new_post.dict()
+def create_posts(post : Post):
+    post_dict = post.dict()
     post_dict['id'] = randrange(0,100000000)
     my_posts.append(post_dict)
     return {'message':'post created',
@@ -59,3 +59,14 @@ def delete_post(id : int):
                             detail=f'post with id : {id} does not exist')
     my_posts.pop(index)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@app.put('/posts/{id}')
+def update_post(id : int, post:Post):
+    index = find_index_post(id)
+    if index==None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'post with id : {id} does not exist')
+    post_dict = post.dict()
+    post_dict['id'] = id
+    my_posts[index] = post_dict
+    return {'data':post_dict}
