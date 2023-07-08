@@ -37,16 +37,12 @@ while True:
 def root():
     return {'message':'running'}
 
-@app.get('/sqlalchemy')
-def test_posts(db : Session = Depends(get_db)):
+@app.get('/posts')
+def get_posts(db : Session = Depends(get_db)):
+    # cursor.execute('''Select * from posts''')
+    # posts = cursor.fetchall()
     posts = db.query(models.Post).all()
     return {'data':posts}
-
-@app.get('/posts')
-def get_posts():
-    cursor.execute('''Select * from posts''')
-    posts = cursor.fetchall()
-    return {"data":posts}
 
 @app.post('/posts',status_code=status.HTTP_201_CREATED)
 def create_posts(post : Post):
