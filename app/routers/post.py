@@ -8,8 +8,8 @@ router = APIRouter(
     tags=['Posts']
 )
 
-@router.get('/')
-def get_posts(db : Session = Depends(database.get_db),response_model=List[schemas.PostResponse],current_user = Depends(oauth2.get_current_user)):
+@router.get('/',response_model=List[schemas.PostResponse])
+def get_posts(db : Session = Depends(database.get_db),current_user = Depends(oauth2.get_current_user)):
     # cursor.execute('''Select * from posts''')
     # posts = cursor.fetchall()
     posts = db.query(models.Post).all()
