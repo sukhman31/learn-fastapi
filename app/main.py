@@ -8,7 +8,7 @@ from fastapi import FastAPI,Response, status, HTTPException, Depends
 # from dotenv import load_dotenv
 # import os
 from typing import List
-from . import models,schemas
+from . import models,schemas,utils
 from .database import engine, get_db
 from sqlalchemy.orm import Session
 
@@ -88,6 +88,9 @@ def update_post(id : int, post:schemas.PostCreate,db : Session = Depends(get_db)
 
 @app.post('/createuser', status_code=status.HTTP_201_CREATED,response_model=schemas.UserCreateResponse)
 def create_user(user:schemas.UserCreate,db : Session = Depends(get_db)):
+    # hash the password
+    hashed_password = utils.hash(user.password)
+    user.password = hashed_password
     new_user = models.User(**user.model_dump())
     db.add(new_user)
     db.commit()
