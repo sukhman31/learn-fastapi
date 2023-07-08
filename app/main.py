@@ -1,6 +1,5 @@
 from fastapi import FastAPI,Response, status, HTTPException, Depends
 from fastapi.params import Body
-from pydantic import BaseModel
 from typing import Optional
 from random import randrange
 import psycopg2
@@ -11,16 +10,12 @@ import os
 from . import models
 from .database import engine, get_db
 from sqlalchemy.orm import Session
+from .schemas import PostCreate
 
 models.Base.metadata.create_all(bind=engine)
 load_dotenv('.env')
 
 app = FastAPI()
-
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True
 
 while True:
     try:
@@ -45,7 +40,7 @@ def get_posts(db : Session = Depends(get_db)):
     return {'data':posts}
 
 @app.post('/posts',status_code=status.HTTP_201_CREATED)
-def create_posts(post : Post,db : Session = Depends(get_db)):
+def create_posts(post : PostCreate,db : Session = Depends(get_db)):
     # cursor.execute('''insert into posts (title,content,published) values (%s,%s,%s) returning *''',(post.title,post.content,post.published))
     # new_post = cursor.fetchone()
     # conn.commit()
@@ -80,7 +75,7 @@ def delete_post(id : int,db : Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @app.put('/posts/{id}')
-def update_post(id : int, post:Post,db : Session = Depends(get_db)):
+def update_post(id : int, post:PostCreate,db : Session = Depends(get_db)):
     # cursor.execute('''update posts set title=%s,content=%s,published=%s where id=%s returning *''',(post.title,post.content,post.published,str(id)))
     # post = cursor.fetchone()
     # conn.commit()
