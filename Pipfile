@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 fastapi = {extras = ["all"], version = "*"}
+psycopg2-binary = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
