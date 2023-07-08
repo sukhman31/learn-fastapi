@@ -4,7 +4,8 @@ from ..database import get_db
 from sqlalchemy.orm import Session
 
 router= APIRouter(
-    prefix='/user'
+    prefix='/user',
+    tags=['Users']
 )
 
 @router.post('/', status_code=status.HTTP_201_CREATED,response_model=schemas.UserCreateResponse)
