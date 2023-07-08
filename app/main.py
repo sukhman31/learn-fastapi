@@ -29,19 +29,6 @@ while True:
         print(error)
         time.sleep(3)
 
-my_posts = [{'title':'title 1','content':'content 1','id':1},
-            {'title':'title 2','content':'content 2','id':2}]
-
-def find_post(id):
-    for post in my_posts:
-        if post['id'] == id:
-            return post
-
-def find_index_post(id):
-    for i,post in enumerate(my_posts):
-        if post['id'] == id:
-            return i
-
 @app.get('/')
 def root():
     return {'message':'running'}
@@ -67,8 +54,6 @@ def get_post(id : int):
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'post with id : {id} was not found')
-        # response.status_code = status.HTTP_404_NOT_FOUND
-        # return {'message':f'post with id:{id} was not found'}
     return {"post_detail":post}
 
 @app.delete('/posts/{id}',status_code=status.HTTP_204_NO_CONTENT)
