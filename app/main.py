@@ -67,23 +67,28 @@ def get_post(id : int,db : Session = Depends(get_db)):
     return {"post_detail":post}
 
 @app.delete('/posts/{id}',status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id : int):
-    cursor.execute('''delete from posts where id = %s returning *''',(str(id)))
-    post = cursor.fetchone()
-    conn.commit()
-    if not post:
+def delete_post(id : int,db : Session = Depends(get_db)):
+    # cursor.execute('''delete from posts where id = %s returning *''',(str(id)))
+    # post = cursor.fetchone()
+    # conn.commit()
+    post_query = db.query(models.Post).filter(models.Post.id==id)
+    if not post_query.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'post with id : {id} does not exist')
-
+    post_query.delete(synchronize_session=False)
+    db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @app.put('/posts/{id}')
-def update_post(id : int, post:Post):
-    cursor.execute('''update posts set title=%s,content=%s,published=%s where id=%s returning *''',(post.title,post.content,post.published,str(id)))
-    post = cursor.fetchone()
-    conn.commit()
-    if not post:
+def update_post(id : int, post:Post,db : Session = Depends(get_db)):
+    # cursor.execute('''update posts set title=%s,content=%s,published=%s where id=%s returning *''',(post.title,post.content,post.published,str(id)))
+    # post = cursor.fetchone()
+    # conn.commit()
+    post_to_update_query = db.query(models.Post).filter(models.Post.id==id)
+    if not post_to_update_query.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'post with id : {id} does not exist')
+    post_to_update_query.update(post.model_dump(),synchronize_session=False)
+    db.commit()
     return {'message':'post updated',
-            'data':post}
+            'data':post_to_update_query.first()}
