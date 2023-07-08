@@ -1,4 +1,4 @@
-from fastapi import FastAPI,Response, status, HTTPException
+from fastapi import FastAPI,Response, status, HTTPException, Depends
 from fastapi.params import Body
 from pydantic import BaseModel
 from typing import Optional
@@ -8,7 +8,11 @@ from psycopg2.extras import RealDictCursor
 import time
 from dotenv import load_dotenv
 import os
+from . import models
+from .database import engine, get_db
+from sqlalchemy.orm import Session
 
+models.Base.metadata.create_all(bind=engine)
 load_dotenv('.env')
 
 app = FastAPI()
@@ -32,6 +36,11 @@ while True:
 @app.get('/')
 def root():
     return {'message':'running'}
+
+@app.get('/sqlalchemy')
+def test_posts(db : Session = Depends(get_db)):
+    posts = db.query(models.Post).all()
+    return {'data':posts}
 
 @app.get('/posts')
 def get_posts():
