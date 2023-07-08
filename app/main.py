@@ -17,6 +17,7 @@ class Post(BaseModel):
     title: str
     content: str
     published: bool = True
+
 while True:
     try:
         conn = psycopg2.connect(host=os.getenv('DB_HOST'),database=os.getenv('DB_NAME'),user=os.getenv('DB_USERNAME'),password=os.getenv('DB_PASSWORD'),cursor_factory=RealDictCursor)
@@ -53,11 +54,11 @@ def get_posts():
 
 @app.post('/posts',status_code=status.HTTP_201_CREATED)
 def create_posts(post : Post):
-    post_dict = post.dict()
-    post_dict['id'] = randrange(0,100000000)
-    my_posts.append(post_dict)
+    cursor.execute('''insert into posts (title,content,published) values (%s,%s,%s) returning *''',(post.title,post.content,post.published))
+    new_post = cursor.fetchone()
+    conn.commit()
     return {'message':'post created',
-            'post':post_dict}
+            'post':new_post}
 
 @app.get('/posts/{id}')
 def get_post(id : int):
