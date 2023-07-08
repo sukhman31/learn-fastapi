@@ -85,3 +85,11 @@ def update_post(id : int, post:schemas.PostCreate,db : Session = Depends(get_db)
     post_to_update_query.update(post.model_dump(),synchronize_session=False)
     db.commit()
     return post_to_update_query.first()
+
+@app.post('/createuser', status_code=status.HTTP_201_CREATED,response_model=schemas.UserCreateResponse)
+def create_user(user:schemas.UserCreate,db : Session = Depends(get_db)):
+    new_user = models.User(**user.model_dump())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
