@@ -28,6 +28,13 @@ class PostResponse(PostBase):
     class Config:
         from_attributes = True
 
+class PostVoteResponse(BaseModel):
+    Post: PostResponse
+    Votes: int
+
+    class Config:
+        from_attributes = True
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
