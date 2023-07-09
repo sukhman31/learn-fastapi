@@ -16,9 +16,9 @@ services:
       - SECRET_KEY=c913b8fae0e79d0b72838ee648071b7572a3a91409c4e2254960fa12b8ce27b6
       - ALGORITHM=HS256
       - ACCESS_TOKEN_EXPIRE_MINUTES= 60
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; alembic upgrade head && uvicorn app.main:app --host 0.0.0.0'
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --reload'
     volumes:
-      - .:/app
+      - ./:/code:ro #read only
 
   db:
     image: postgres:15-alpine
