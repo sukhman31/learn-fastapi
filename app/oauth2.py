@@ -33,6 +33,12 @@ def verify_access_token(token: str, credentials_exception):
         if not id:
             raise credentials_exception
         token_data = schemas.TokenData(id=id)
+        expire = datetime.fromisoformat(payload.get('expire'))
+        print('--------------------------------------------')
+        print(type(expire))
+        print('--------------------------------------------')
+        if datetime.utcnow() > expire:
+            raise credentials_exception
     except JWTError:
         raise credentials_exception
     return token_data
